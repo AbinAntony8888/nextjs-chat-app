@@ -1,6 +1,7 @@
 export default function Chat() {
   return (
     <div className="w-full bg-gray-300 h-full flex flex-col justify-between">
+        {/* header */}
       <div className="w-full h-1/6 bg-gray-50 p-6 flex flex-row">
         <div className="flex flex-row gap-6 items-center ">
           <img
@@ -60,6 +61,7 @@ export default function Chat() {
           </div>
         </div>
       </div>
+      <hr className=" border-gray-400"/>
       {/* messaging part */}
       <div className="p-6 overflow-y-scroll">
         {/* 1 */}
