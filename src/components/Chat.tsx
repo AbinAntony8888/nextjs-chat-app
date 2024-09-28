@@ -205,7 +205,7 @@ export default function Chat() {
         </svg>
         <input
           type="text"
-          className="bg-gray-100 p-1 w-full outline-none rounded-md px-6"
+          className="bg-gray-100 p-2 w-full outline-none rounded-md px-6"
           placeholder="Type a message....."
         />
 
