@@ -1,6 +1,6 @@
 export default function List() {
   return (
-    <div className=" bg-gray-800 p-6 h-full w-1/4 flex flex-col gap-6 overflow-y-scroll">
+    <div className=" bg-gray-800 p-6 h-full w-1/4 flex flex-col gap-6 overflow-y-scroll border-2 border-gray-400">
       <div className="flex items-center bg-gray-700 p-2 rounded-md">
         <svg
           xmlns="http://www.w3.org/2000/svg"
