@@ -1,7 +1,41 @@
+"use client"; // This ensures that this component is rendered on the client side
+
+import React, { useEffect, useState } from "react";
+import io from "socket.io-client"; // Import `io` function
+
+let socket: ReturnType<typeof io>;
+
 export default function Chat() {
+  const [inputValue, setInputValue] = useState<string>("");
+  const [messages, setMessages] = useState<string[]>([]);
+  useEffect(() => {
+    // Connect to the Socket.IO server
+    socket = io("http://localhost:4000"); // Replace with your Socket.IO server URL
+
+    // Listen for incoming messages
+    socket.on("message", (msg: string) => {
+      setMessages((prevMessages) => [...prevMessages, msg]);
+    });
+
+    // Cleanup on component unmount
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleButtonClick = () => {
+    socket.emit("message", inputValue); // Send message to the server
+    setInputValue(""); // Clear input field after sending
+  };
   return (
     <div className="w-full bg-gray-300 h-full flex flex-col justify-between border-2 border-gray-400">
-        {/* header */}
+      {/* header */}
       <div className="w-full h-1/6 bg-gray-50 p-6 flex flex-row">
         <div className="flex flex-row gap-6 items-center ">
           <img
@@ -61,7 +95,6 @@ export default function Chat() {
           </div>
         </div>
       </div>
-      <hr className="border-2 border-gray-400"/>
       {/* messaging part */}
       <div className="p-6 overflow-y-scroll ">
         {/* 1 */}
@@ -82,75 +115,20 @@ export default function Chat() {
           </div>
         </div>
         <div>
-        <div className="flex justify-end ml-auto">
-          <p className="ml-4 w-2/3 bg-green-50 p-4 rounded-lg">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Possimus
-            fugit numquam modi cumque ad doloribus consequatur adipisci minus
-            quod. Vero veritatis eaque impedit blanditiis quasi accusantium nemo
-            dolorem velit enim!
-          </p>
-        </div>
-        <span className=" pt-2 text-xs flex justify-end ml-auto">1 min ago</span>
-        </div>
-
-{/* 2 */}
-<div className="flex ">
-          <img
-            src="https://www.wallpaperflare.com/static/179/390/467/cristiano-ronaldo-wallpaper-preview.jpg"
-            alt=""
-            className="size-8 rounded-full"
-          />
-          <div>
-            <p className="ml-4 w-2/3 bg-gray-400 p-4 rounded-lg">
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Possimus
-              fugit numquam modi cumque ad doloribus consequatur adipisci minus
-              quod. Vero veritatis eaque impedit blanditiis quasi accusantium
-              nemo dolorem velit enim!
-            </p>
-            <span className="ml-4 pt-2 text-xs ">1 min ago</span>
+          <div className="flex flex-col gap-2 justify-end ">
+            {messages.map((msg, index) => (
+              <div>
+              <p key={index} className="ml-auto w-2/3 bg-green-50 p-4 rounded-lg break-words">
+                {msg}
+              </p>
+               <span className=" pt-2 text-xs flex justify-end ml-auto">
+               {index+1} min ago
+             </span>
+             </div>
+            ))}
+           
           </div>
         </div>
-        <div>
-        <div className="flex justify-end ml-auto">
-          <p className="ml-4 w-2/3 bg-green-50 p-4 rounded-lg">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Possimus
-            fugit numquam modi cumque ad doloribus consequatur adipisci minus
-            quod. Vero veritatis eaque impedit blanditiis quasi accusantium nemo
-            dolorem velit enim!
-          </p>
-        </div>
-        <span className=" pt-2 text-xs flex justify-end ml-auto">1 min ago</span>
-        </div>
-
-        {/* 3 */}
-        <div className="flex ">
-          <img
-            src="https://www.wallpaperflare.com/static/179/390/467/cristiano-ronaldo-wallpaper-preview.jpg"
-            alt=""
-            className="size-8 rounded-full"
-          />
-          <div>
-            <p className="ml-4 w-2/3 bg-gray-400 p-4 rounded-lg">
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Possimus
-              fugit numquam modi cumque ad doloribus consequatur adipisci minus
-              quod. Vero veritatis eaque impedit blanditiis quasi accusantium
-              nemo dolorem velit enim!
-            </p>
-            <span className="ml-4 pt-2 text-xs ">1 min ago</span>
-          </div>
-        </div>
-        <div>
-        <div className="flex justify-end ml-auto">
-          <p className="ml-4 w-2/3 bg-green-50 p-4 rounded-lg">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Possimus
-            fugit numquam modi cumque ad doloribus consequatur adipisci minus
-            quod. Vero veritatis eaque impedit blanditiis quasi accusantium nemo
-            dolorem velit enim!
-          </p>
-        </div>
-        <span className=" pt-2 text-xs flex justify-end ml-auto">1 min ago</span>
-        </div>
-
       </div>
       {/* input message */}
 
@@ -206,6 +184,8 @@ export default function Chat() {
         <input
           type="text"
           className="bg-gray-100 p-2 w-full outline-none rounded-md px-6"
+          value={inputValue}
+          onChange={handleInputChange}
           placeholder="Type a message....."
         />
 
@@ -224,7 +204,10 @@ export default function Chat() {
           />
         </svg>
 
-        <button className="bg-blue-600 px-2 py-1 rounded-md text-white font-bold text-sm">
+        <button
+          onClick={handleButtonClick}
+          className="bg-blue-600 px-2 py-1 rounded-md text-white font-bold text-sm"
+        >
           Send
         </button>
       </div>
